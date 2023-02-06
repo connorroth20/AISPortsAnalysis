@@ -5,9 +5,12 @@ Tool uses a react frotnend to display findings and Ai predicted statistics. Mach
 Examples includes code generated examples from AI that display pytorch functionalitiy
 
 ## Getting Started
-Start by running the following command in a Linux environment:
+Start by running the following commands in a Linux environment:
 
-`pip install torch`
+```
+pip install torch
+pip install pandas
+```
 
 Project built by Connor, Matthew, Santiago, Dan
 
