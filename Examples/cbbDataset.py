@@ -96,6 +96,9 @@ class cbbDataset(Dataset):
             y = y.to(device)
             prediction = model(X)
             null, prediction_label = torch.max(prediction.data, 0)
+            print(f"predictions: {prediction}")
+            print(f"prediction_label: {prediction_label}")
+            print(f"y.data: {y.data}")
             correct += (prediction_label == y.data).sum()
             total += 1
         accuracy = correct / total
@@ -137,7 +140,7 @@ class cbb_linear_model(nn.Module):
 
 lr = 0.01
 momentum = 0.2
-num_epochs = 50
+num_epochs = 5
 
 dataset_train = cbbDataset(split='train')
 dataset_test = cbbDataset(split='test')
