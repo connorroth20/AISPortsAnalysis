@@ -17,9 +17,9 @@ class Model(nn.Module):
   def __init__(self):
     super(Model, self).__init__()
     self.fc1 = nn.Linear(2, 10)
-    self.fc2 = nn.Linear(10, 3)
-    self.fc3 = nn.Linear(3, 2)
-    self.fc4 = nn.Linear(2, 1)
+    self.fc2 = nn.Linear(10, 5)
+    self.fc3 = nn.Linear(5, 2)
+    self.fc4 = nn.Linear(2, 2)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
@@ -56,12 +56,19 @@ for epoch in range(3000):
   # Start testing
   prediction =  model(test)
 
-  prediction_label = torch.mean(prediction.data)
-  actual_label = torch.mean(test.data[:,1])
-  print(f"prediction: {prediction_label}")
-  print(f"actual: {actual_label}")
+  prediction_label_x = torch.mean(prediction.data[1,:])
+  actual_label_x = torch.mean(test.data[1,:])
+  print(f"predicted X: {prediction_label_x}")
+  print(f"actual X: {actual_label_x}")
 
-  correct += 1 - (abs(prediction_label - actual_label)/actual_label)
+  prediction_label_y = torch.mean(prediction.data[:,1])
+  actual_label_y = torch.mean(test.data[:,1])
+  print(f"predicted Y: {prediction_label_y}")
+  print(f"actual Y: {actual_label_y}")
+
+  x_similarity = 1 - (abs(prediction_label_x - actual_label_x)/actual_label_x)
+  y_similarity = 1 - (abs(prediction_label_y - actual_label_y)/actual_label_y)
+  correct += (x_similarity + y_similarity)/2
   total += 1
 
   accuracy = (correct/total)*100
