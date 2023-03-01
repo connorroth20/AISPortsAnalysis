@@ -16,14 +16,16 @@ test = torch.tensor([[11,12],[13,14],[15,16],[17,18],[19,20]], dtype=torch.float
 class Model(nn.Module):
   def __init__(self):
     super(Model, self).__init__()
-    self.fc1 = nn.Linear(2, 5)
-    self.fc2 = nn.Linear(5, 10)
-    self.fc3 = nn.Linear(10, 1)
+    self.fc1 = nn.Linear(2, 10)
+    self.fc2 = nn.Linear(10, 3)
+    self.fc3 = nn.Linear(3, 2)
+    self.fc4 = nn.Linear(2, 1)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
     x = F.relu(self.fc2(x))
-    x = self.fc3(x)
+    x = F.relu(self.fc3(x))
+    x = self.fc4(x)
     return x
 
 # Create an instance of the model
@@ -35,7 +37,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 total = 0
 correct = 0
 # Train and test the model
-for epoch in range(500):
+for epoch in range(3000):
   # Clear the gradients
   optimizer.zero_grad()
   
@@ -54,15 +56,17 @@ for epoch in range(500):
   # Start testing
   prediction =  model(test)
 
-  null, prediction_label = torch.max(prediction.data, 0)
-  null, actual_label = torch.max(test.data, 0)
+  prediction_label = torch.mean(prediction.data)
+  actual_label = torch.mean(test.data[:,1])
+  print(f"prediction: {prediction_label}")
+  print(f"actual: {actual_label}")
 
-  correct += (prediction_label == actual_label[0]).sum()
+  correct += 1 - (abs(prediction_label - actual_label)/actual_label)
   total += 1
 
-accuracy = correct/total
-print(f"Accuracy: {accuracy}")
+  accuracy = (correct/total)*100
+  print(f"Accuracy: {accuracy}%")
 
 # Print the model's weights
-for param in model.parameters():
-  print(param)
+# for param in model.parameters():
+#   print(param)
