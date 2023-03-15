@@ -54,7 +54,7 @@ for epoch in range(3000):
   output = model(train)
   
   # Calculate loss
-  loss = (output - torch.sum(train)).pow(2).mean()
+  loss = criterion(output, test.data[1,:])
 
   #alternatively, use this, where we use our criterion to
   #set up the training model, in a similar way.
