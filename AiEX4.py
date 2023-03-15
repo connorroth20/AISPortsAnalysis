@@ -69,35 +69,7 @@ for epoch in range(3000):
   #evaluate with the test set-> 
   
   # with torch.no_grad():
-  #    prediction = model(test)
-
-  #    prediction_label_x = torch.mean(prediction.data[1,:])
-  #    actual_label_x = torch.mean(test.data[1,:])
-  #    print(f"predicted X: {prediction_label_x}")
-  #    print(f"actual X: {actual_label_x}")
-
-  #    prediction_label_y = torch.mean(prediction.data[:,1])
-  #    actual_label_y = torch.mean(test.data[:,1])
-  #    print(f"predicted Y: {prediction_label_y}")
-  #    print(f"actual Y: {actual_label_y}")
-
-  #    x_similarity = 1 - (abs(prediction_label_x - actual_label_x)/actual_label_x)
-  #    y_similarity = 1 - (abs(prediction_label_y - actual_label_y)/actual_label_y)
-  #    correct += (x_similarity + y_similarity)/2
-  #    total += 1
-
-  #    accuracy = (correct/total)*100
-  #    print(f"Accuracy: {accuracy}%")
-
-  #Above is the example with the same model just using a dropout model
-  # Per:  Here, we use the nn.MSELoss() as the loss function and train the model with dropout by including it in the forward method of the model. We also use torch.no_grad() to evaluate the model on the test set without computing gradients. The rest of the training code remains the same.
-
-
-
-
-
-  # Start testing
-  prediction =  model(test)
+  prediction = model(test)
 
   prediction_label_x = torch.mean(prediction.data[1,:])
   actual_label_x = torch.mean(test.data[1,:])
@@ -116,6 +88,34 @@ for epoch in range(3000):
 
   accuracy = (correct/total)*100
   print(f"Accuracy: {accuracy}%")
+
+  #Above is the example with the same model just using a dropout model
+  # Per:  Here, we use the nn.MSELoss() as the loss function and train the model with dropout by including it in the forward method of the model. We also use torch.no_grad() to evaluate the model on the test set without computing gradients. The rest of the training code remains the same.
+
+
+
+
+
+  # Start testing
+  # prediction =  model(test)
+
+  # prediction_label_x = torch.mean(prediction.data[1,:])
+  # actual_label_x = torch.mean(test.data[1,:])
+  # print(f"predicted X: {prediction_label_x}")
+  # print(f"actual X: {actual_label_x}")
+
+  # prediction_label_y = torch.mean(prediction.data[:,1])
+  # actual_label_y = torch.mean(test.data[:,1])
+  # print(f"predicted Y: {prediction_label_y}")
+  # print(f"actual Y: {actual_label_y}")
+
+  # x_similarity = 1 - (abs(prediction_label_x - actual_label_x)/actual_label_x)
+  # y_similarity = 1 - (abs(prediction_label_y - actual_label_y)/actual_label_y)
+  # correct += (x_similarity + y_similarity)/2
+  # total += 1
+
+  # accuracy = (correct/total)*100
+  # print(f"Accuracy: {accuracy}%")
 
 # Print the model's weights
 # for param in model.parameters():
