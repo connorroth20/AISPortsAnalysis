@@ -55,6 +55,8 @@ for epoch in range(750):
   
   # Calculate loss
   loss = criterion(output, test)
+
+  print(f"Epoch: {epoch}, Loss: {loss}") 
   #alternatively, use this, where we use our criterion to
   #set up the training model, in a similar way.
   #loss = criterion(output, torch.sum(train)).pow(2).mean() ?
