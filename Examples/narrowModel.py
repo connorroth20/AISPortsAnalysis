@@ -17,33 +17,74 @@ class cbbDataset(Dataset):
         data = data.loc[data['SEED'].notnull()]
         #Get just the columns that we want
         X = data.loc[:, ['ADJOE','ADJDE','BARTHAG','EFG_O','TOR','ADJ_T']].values
+        Y = data.loc[:, 'POSTSEASON'].values
         #Strip off the headers
         X=X[1:]
+        Y=Y[1:]
+
+        #Change Y to fit following model:
+        #0 - NA
+        #1 - R64 and R68
+        #2 - R32
+        #3 - S16
+        #4 - E8
+        #5 - F4
+        #6 - 2ND
+        #7 - Champions
+
+        for i,y in enumerate(Y):
+            if y == 'NA':
+                Y[i] = 0
+            
+            elif (y == 'R64' or y == 'R68'):
+                Y[i] = 1
+            
+            elif (y == 'R32'):
+                Y[i] = 2
+
+            elif (y == 'S16'):
+                Y[i] = 3
+
+            elif (y == 'E8'):
+                Y[i] = 4
+            
+            elif (y == 'F4'):
+                Y[i] = 5
+
+            elif (y == '2ND'):
+                Y[i] = 6
+
+            elif (y == 'Champions'):
+                Y[i] = 7
 
         X = X.astype(float)
+        Y = Y.astype(float)
 
         #Scale the input data
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
         #Separate into data sets
-        X_train, X_test= train_test_split(X_scaled, test_size = 0.2, random_state = 0, shuffle = True)
+        X_train, X_test, y_train, y_test = train_test_split(X_scaled, Y, test_size = 0.2, random_state = 0, shuffle = True)
 
         # print(X_train)
         # print(y_train)
         if split == 'train':
             self.x_data = X_train
+            self.y_data = y_train
             print('Training dataset loaded')
         elif split == 'test':
             self.x_data = X_test
+            self.y_data = y_test
             print('Test dataset loaded')
         else:
             self.x_data = np.concatenate((X_train,X_test),axis=0)
+            self.y_data = np.concatenate((y_train,y_test),axis=0)
 
     def __getitem__(self, i):
-        return torch.tensor(self.x_data[i]).float().to(device)
+        return torch.tensor(self.x_data[i]).float().to(device), torch.tensor(self.y_data[i]).float().to(device)
 
     def __len__(self):
-        return len(self.x_data)
+        return len(self.y_data)
 
     @staticmethod
     def test(model, test_dl):
@@ -51,11 +92,11 @@ class cbbDataset(Dataset):
         accuracy = None
         total = 0
         correct = 0
-        for (X) in test_dl:
+        for (X, y) in test_dl:
             X = X.to(device)
-            Y = X[0].to(device)
+            Y = y.to(device)
             prediction = model(X)
-            prediction_label = prediction.data[0]
+            null, prediction_label = torch.max(prediction.data, 0)
             print(f"prediction_label: {prediction_label}")
             print(f"x.data: {Y.data}")
             print(f"check: {(prediction_label == Y.data).sum()}")
@@ -71,10 +112,10 @@ class cbbDataset(Dataset):
         loss_fn = nn.MSELoss(reduction='mean')
 
         for epoch in range(1, num_epochs + 1):
-            for X in train_dl:
+            for (X, y) in train_dl:
                 opt.zero_grad()
                 X = X.to(device)
-                Y = X[0].to(device)
+                Y = y.to(device)
                 guess = model(X)
                 loss = loss_fn(guess, Y)
                 loss.backward()
