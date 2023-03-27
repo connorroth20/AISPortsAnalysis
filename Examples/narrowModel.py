@@ -10,8 +10,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class cbbDataset(Dataset):
     
     def __init__(self, split='train', shuffle=True):
-        path = '../cbb.csv'
-        data = pd.read_csv(path, header=None)
+        path1 = '../cbb.csv'
+        data = pd.read_csv(path1, header=None)
         data.columns = ['TEAM','CONF','G','W','ADJOE','ADJDE','BARTHAG','EFG_O','EFG_D','TOR','TORD','ORB','DRB','FTR','FTRD','2P_O','2P_D','3P_O','3P_D','ADJ_T','WAB','POSTSEASON','SEED', 'YEAR']
         #We only want to analyze the teams in the tournament
         data = data.loc[data['SEED'].notnull()]
@@ -97,9 +97,6 @@ class cbbDataset(Dataset):
             Y = y.to(device)
             prediction = model(X)
             null, prediction_label = torch.max(prediction.data, 0)
-            print(f"prediction_label: {prediction_label}")
-            print(f"x.data: {Y.data}")
-            print(f"check: {(prediction_label == Y.data).sum()}")
             correct += (prediction_label == Y.data).sum()
             total += 1
         accuracy = correct / total
@@ -151,3 +148,32 @@ model = model.to(device)
 cbbDataset.train(model, lr, momentum, num_epochs, dataset_train, dataset_test)
 test_accuracy = cbbDataset.test(model, dataset_test)
 print(f"Final test accuracy: {test_accuracy:.4f}")
+
+
+# Predictions for 2021 season
+path = '../cbb19.csv'
+data = pd.read_csv(path)
+#We only want to analyze the teams in the tournament
+data = data.loc[data['SEED'].notnull()]
+#Grab the values tha we want
+x = data.loc[:, ['ADJOE','ADJDE','BARTHAG','EFG_O','TOR','ADJ_T']].values
+
+#Get the teams and results
+teams = data.loc[:, 'TEAM']
+actual = data.loc[:, 'POSTSEASON']
+
+#Scale the data
+scaler = StandardScaler()
+x_scaled = scaler.fit_transform(x)
+
+results = ['NA','R64','R32','S16','E8','F4','2ND','Champions']
+
+for t in range(len(teams)):
+    torch_data = torch.tensor(x_scaled[t]).float().to(device)
+    prediction = model(torch_data)
+    null, prediction_index = torch.max(prediction.data, 0)
+    prediction_label = results[prediction_index]
+    print("team: ", teams[t])
+    print("prediction: ", prediction_label)
+    print("actual: ", actual[t])
+    print("---") 
