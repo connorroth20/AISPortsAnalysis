@@ -13,5 +13,6 @@ from django.http import HttpResponse
 def say_hello(request):
     return render(request, 'hello.html', { 'name': 'Dan'})
 
+
 # After creating this view function, we need to map it to a URL
 # So when we get a request at that URL, this function will be caught

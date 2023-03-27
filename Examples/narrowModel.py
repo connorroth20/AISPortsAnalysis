@@ -136,44 +136,56 @@ class cbb_linear_model(nn.Module):
         x = self.fc4(x)
         return x
 
-lr = 0.01
-momentum = 0.2
-num_epochs = 1
+    def createModel(self):
+        lr = 0.01
+        momentum = 0.2
+        num_epochs = 1
 
-dataset_train = cbbDataset(split='train')
-dataset_test = cbbDataset(split='test')
+        dataset_train = cbbDataset(split='train')
+        dataset_test = cbbDataset(split='test')
 
-model = cbb_linear_model()
-model = model.to(device)
-cbbDataset.train(model, lr, momentum, num_epochs, dataset_train, dataset_test)
-test_accuracy = cbbDataset.test(model, dataset_test)
-print(f"Final test accuracy: {test_accuracy:.4f}")
+        model = cbb_linear_model()
+        model = model.to(device)
+        cbbDataset.train(model, lr, momentum, num_epochs, dataset_train, dataset_test)
+        test_accuracy = cbbDataset.test(model, dataset_test)
+        return test_accuracy
 
 
-# Predictions for 2021 season
-path = '../cbb19.csv'
-data = pd.read_csv(path)
-#We only want to analyze the teams in the tournament
-data = data.loc[data['SEED'].notnull()]
-#Grab the values tha we want
-x = data.loc[:, ['ADJOE','ADJDE','BARTHAG','EFG_O','TOR','ADJ_T']].values
+    def useModel(self):
+        # Predictions for 2021 season
+        model = self.to(device)
+        path = '../cbb19.csv'
+        data = pd.read_csv(path)
+        #We only want to analyze the teams in the tournament
+        data = data.loc[data['SEED'].notnull()]
+        #Grab the values tha we want
+        x = data.loc[:, ['ADJOE','ADJDE','BARTHAG','EFG_O','TOR','ADJ_T']].values
 
-#Get the teams and results
-teams = data.loc[:, 'TEAM']
-actual = data.loc[:, 'POSTSEASON']
+        #Get the teams and results
+        teams = data.loc[:, 'TEAM']
+        actual = data.loc[:, 'POSTSEASON']
 
-#Scale the data
-scaler = StandardScaler()
-x_scaled = scaler.fit_transform(x)
+        #Scale the data
+        scaler = StandardScaler()
+        x_scaled = scaler.fit_transform(x)
 
-results = ['NA','R64','R32','S16','E8','F4','2ND','Champions']
+        results = ['NA','R64','R32','S16','E8','F4','2ND','Champions']
+        complete_results = []
 
-for t in range(len(teams)):
-    torch_data = torch.tensor(x_scaled[t]).float().to(device)
-    prediction = model(torch_data)
-    null, prediction_index = torch.max(prediction.data, 0)
-    prediction_label = results[prediction_index]
-    print("team: ", teams[t])
-    print("prediction: ", prediction_label)
-    print("actual: ", actual[t])
-    print("---") 
+        for t in range(len(teams)):
+            torch_data = torch.tensor(x_scaled[t]).float().to(device)
+            prediction = model(torch_data)
+            null, prediction_index = torch.max(prediction.data, 0)
+            prediction_label = results[prediction_index]
+            complete_results.append(dict(team = teams[t], prediction = prediction_label, actual = actual[t]))
+
+        return complete_results
+            
+run_model = cbb_linear_model()
+
+acc = run_model.createModel()
+print(f"Accuracy: {acc}")
+
+results = run_model.useModel()
+
+print(results)
