@@ -119,7 +119,7 @@ class cbbDataset(Dataset):
                 loss.backward()
                 opt.step()
             test_accuracy = cbbDataset.test(model, test_dl)
-            print(f"Test accuracy at epoch {epoch}: {test_accuracy:.4f}")
+            # print(f"Test accuracy at epoch {epoch}: {test_accuracy:.4f}")
 
 class cbb_linear_model(nn.Module):
     def __init__(self):
@@ -171,14 +171,14 @@ class cbb_linear_model(nn.Module):
         x_scaled = scaler.fit_transform(x)
 
         results = ['NA','R64','R32','S16','E8','F4','2ND','Champions']
-        complete_results = []
+        complete_results = {}
 
         for t in range(len(teams)):
             torch_data = torch.tensor(x_scaled[t]).float().to(device)
             prediction = model(torch_data)
             null, prediction_index = torch.max(prediction.data, 0)
             prediction_label = results[prediction_index]
-            complete_results.append(dict(team = teams[t], prediction = prediction_label, actual = actual[t]))
+            complete_results[t] = dict(team = teams[t], prediction = prediction_label, actual = actual[t])
 
         return complete_results
             

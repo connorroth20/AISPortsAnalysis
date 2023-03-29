@@ -21,6 +21,8 @@ def show_predictions(request):
     acc = run_model.createModel()
 
     predictions = run_model.useModel()
+
+    print(predictions)
     return render(request, 'predictions.html', {'renderdict': predictions})
 
 # After creating this view function, we need to map it to a URL

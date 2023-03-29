@@ -1,15 +1,18 @@
 <html>
     <body>
-        {% if name %}
+        {% if renderdict %}
         <h1>Predictions</h1>
         {% for key, values in renderdict.items %}
 
-        <h2>{{ key }}</h2>
         <tr>
-            <tr>{{ values.team }}</tr>
-            <tr>{{ values.predicted }}</tr>
-            <tr>{{ values.actual }}</tr>
+            <tr>Team Name: {{ values.team }}</tr>
+            <br>
+            <tr>Predicted Postseason Rank: {{ values.prediction }}</tr>
+            <br>
+            <tr>Actual Postseason Rank: {{ values.actual }}</tr>
+            <br>
         </tr>
+        <br>
 
         {% endfor %}
         {% else %}
