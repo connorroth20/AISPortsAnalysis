@@ -1,0 +1,19 @@
+<html>
+    <body>
+        {% if name %}
+        <h1>Predictions</h1>
+        {% for key, values in renderdict.items %}
+
+        <h2>{{ key }}</h2>
+        <tr>
+            <tr>{{ values.team }}</tr>
+            <tr>{{ values.predicted }}</tr>
+            <tr>{{ values.actual }}</tr>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>Hello World!</h1>
+        {% endif %}
+    </body>
+</html>

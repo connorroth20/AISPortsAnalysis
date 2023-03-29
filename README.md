@@ -10,7 +10,18 @@ Start by running the following commands in a Linux environment:
 ```
 pip install torch
 pip install pandas
+pip install -U scikit-learn
 ```
+
+## Running the Django App Locally
+First, in the top directory called `storefront` run the command:
+
+```
+pipenv install django
+pipenv shell
+```
+
+Then, you need to repeat the earlier steps laid out in `Getting Started`
 
 Project built by Connor, Matthew, Santiago, Dan
 

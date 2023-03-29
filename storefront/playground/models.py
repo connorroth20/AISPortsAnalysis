@@ -182,11 +182,11 @@ class cbb_linear_model(nn.Module):
 
         return complete_results
             
-run_model = cbb_linear_model()
+# run_model = cbb_linear_model()
 
-acc = run_model.createModel()
-print(f"Accuracy: {acc}")
+# acc = run_model.createModel()
+# print(f"Accuracy: {acc}")
 
-results = run_model.useModel()
+# results = run_model.useModel()
 
-print(results)
+# print(results)
